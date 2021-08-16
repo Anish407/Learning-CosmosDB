@@ -1,0 +1,2 @@
+﻿1. Install Microsoft.Azure.Cosmos
+2. Microsoft.Extensions.Configuration.Json
