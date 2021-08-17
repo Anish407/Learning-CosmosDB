@@ -1,8 +1,15 @@
-﻿namespace CosmosDB.SQL
+﻿using Microsoft.Azure.Cosmos;
+
+namespace CosmosDB.SQL
 {
     public interface ICosmosOperations
     {
-        Task QueryDocuments(string endpoint, string key, string query);
-        Task GetDatabaseDetails(string endpoint, string key);
+        Task<FeedResponse<T>> QueryDocuments<T>(string query);
+        Task GetAllDatabaseDetails();
+        Task CreateDatabase(string databaseName);
+        Task DeleteDatabase(string databaseName);
+        Task CreateContainer(string databaseName, string containerName, string partitionKey);
+        Task CreateItemAsync(string databaseName, string containerName);
+        IAsyncEnumerable<T> QueryDocumentsPerPage<T>(string query, int pageSize = 1);
     }
 }

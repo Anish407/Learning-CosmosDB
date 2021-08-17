@@ -14,8 +14,11 @@ var cosmosOperations = serviceProvider.GetService<ICosmosOperations>();
 
 try
 {
-    await cosmosOperations.QueryDocuments(endpoint, key, query);
-    await cosmosOperations.GetDatabaseDetails(endpoint, key);
+    //await ExecuteQuery();
+    //await cosmosOperations!.GetAllDatabaseDetails();
+    //await cosmosOperations!.CreateContainer("Families", "Demo", "pk");
+    //await cosmosOperations!.CreateItemAsync("Families", "Family");
+    await QueryPerPage(pageSize:1);
 }
 catch (CosmosException de)
 {
@@ -27,8 +30,19 @@ catch (Exception e)
     Console.WriteLine("Error: {0}", e);
 }
 
+async Task QueryPerPage(int pageSize=1)
+{
+    await foreach (var item in cosmosOperations.QueryDocumentsPerPage<Family>(query, pageSize))
+        Console.WriteLine($"{item.firstname} has {item.children.Length} children");
+}
 
+async Task ExecuteQuery()
+{
+    var page1 = await cosmosOperations!.QueryDocuments<Family>(query);
 
+    foreach (var item in page1)
+        Console.WriteLine($"{item.firstname} has {item.children.Length} children");
+}
 
 
 IConfiguration SetupConfiguration()
@@ -54,8 +68,10 @@ IServiceProvider InitializeDI(IConfiguration configuration)
         string endpoint = Configuration!["CosmosEndpoint"];
         string key = Configuration["MasterKey"];
 
-        var cosmosClient = new CosmosClient(endpoint, key);
+        var cosmosClient = new FamiliesClient(endpoint, key);
 
         services!.AddSingleton(cosmosClient);
     }
+
+    
 }
