@@ -15,21 +15,39 @@ namespace CosmosDB.SQL
             return await iterator.ReadNextAsync();
         }
 
-        public async IAsyncEnumerable<T> QueryDocumentsPerPage<T>(string query, int pageSize=1)
+        public async IAsyncEnumerable<T> QueryDocumentsPerPage<T>(string query, int pageSize = 1)
         {
             var container = CosmosClient.GetContainer(databaseId: "Families", containerId: "Family");
-            var iterator = container.GetItemQueryIterator<T>(query, requestOptions: new QueryRequestOptions { MaxItemCount = pageSize});
-            List<T> list = new List<T>();
+            var iterator = container.GetItemQueryIterator<T>(query, requestOptions: new QueryRequestOptions { MaxItemCount = pageSize });
 
             while (iterator.HasMoreResults)
             {
                 foreach (var item in await iterator.ReadNextAsync())
-                   yield return item;
+                    yield return item;
             }
         }
 
+        public async Task<IList<T>> QueryDocumentsPerPageContinuationToken<T>(string query, int pageSize = 1)
+        {
+            var container = CosmosClient.GetContainer(databaseId: "Families", containerId: "Family");
+            var iterator = container.GetItemQueryIterator<T>(query, requestOptions: new QueryRequestOptions { MaxItemCount = pageSize });
+            var page = await iterator.ReadNextAsync();
+            IList<T> result = new List<T>();
+            do
+            {
+                foreach (var item in page)
+                    result.Add(item);
 
-        public  IEnumerable<string> Sample()
+                iterator = container.GetItemQueryIterator<T>(query, page.ContinuationToken, requestOptions: new QueryRequestOptions { MaxItemCount = pageSize });
+                page = await iterator.ReadNextAsync();
+
+            } while (page.ContinuationToken != null);
+            return result;
+        }
+
+
+
+        public IEnumerable<string> Sample()
         {
             foreach (var item in new string[] { })
                 yield return item;

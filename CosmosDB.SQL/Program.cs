@@ -18,7 +18,8 @@ try
     //await cosmosOperations!.GetAllDatabaseDetails();
     //await cosmosOperations!.CreateContainer("Families", "Demo", "pk");
     //await cosmosOperations!.CreateItemAsync("Families", "Family");
-    await QueryPerPage(pageSize:1);
+    //await QueryPerPage(pageSize:1);
+    await QueryPerPageContinuation(pageSize: 1);
 }
 catch (CosmosException de)
 {
@@ -33,6 +34,12 @@ catch (Exception e)
 async Task QueryPerPage(int pageSize=1)
 {
     await foreach (var item in cosmosOperations.QueryDocumentsPerPage<Family>(query, pageSize))
+        Console.WriteLine($"{item.firstname} has {item.children.Length} children");
+}
+
+async Task QueryPerPageContinuation(int pageSize = 1)
+{
+     foreach (var item in await cosmosOperations.QueryDocumentsPerPageContinuationToken<Family>(query, pageSize))
         Console.WriteLine($"{item.firstname} has {item.children.Length} children");
 }
 
