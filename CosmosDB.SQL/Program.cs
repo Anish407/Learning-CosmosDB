@@ -19,7 +19,8 @@ try
     //await cosmosOperations!.CreateContainer("Families", "Demo", "pk");
     //await cosmosOperations!.CreateItemAsync("Families", "Family");
     //await QueryPerPage(pageSize:1);
-    await QueryPerPageContinuation(pageSize: 1);
+    //await QueryPerPageContinuation(pageSize: 1);
+    await ReplaceDocuments();
 }
 catch (CosmosException de)
 {
@@ -29,6 +30,15 @@ catch (CosmosException de)
 catch (Exception e)
 {
     Console.WriteLine("Error: {0}", e);
+}
+
+ async Task ReplaceDocuments()
+{
+    string query = "select * from c where c.firstname='anish'";
+    await foreach (var item in cosmosOperations!.ReplaceDocuments<FamilyExtended>(query))
+    {
+        Console.WriteLine($"{item.firstname} -- gender {item.gender}");
+    }
 }
 
 async Task QueryPerPage(int pageSize=1)

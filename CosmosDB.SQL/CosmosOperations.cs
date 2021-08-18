@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
+using System.Text.Json;
 
 namespace CosmosDB.SQL
 {
@@ -45,7 +46,19 @@ namespace CosmosDB.SQL
             return result;
         }
 
+        public async IAsyncEnumerable<T> ReplaceDocuments<T>(string query) 
+        {
+            var container = CosmosClient.GetContainer(databaseId: "Families", containerId: "Family");
+            var page = container.GetItemQueryIterator<dynamic>(query);
 
+            foreach (var item in await page.ReadNextAsync())
+            {
+                item.gender = "male";
+                var result= await container.ReplaceItemAsync<dynamic>(item,(string) item.id);
+                var updated= JsonSerializer.Deserialize<T>(result.Resource.ToString());
+                yield return updated;
+            }
+        }
 
         public IEnumerable<string> Sample()
         {

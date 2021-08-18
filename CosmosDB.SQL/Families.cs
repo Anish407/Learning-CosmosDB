@@ -1,9 +1,15 @@
 ﻿namespace CosmosDB.SQL
 {
 
+    public class FamilyExtended: Family
+    {
+        public string gender { get; set; }
+    }
+
     public class Family
     {
         public string firstname { get; set; }
+        
         public string familyname { get; set; }
         public Child[] children { get; set; }
         public string id { get; set; }
