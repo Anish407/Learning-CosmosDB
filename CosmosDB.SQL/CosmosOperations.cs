@@ -46,7 +46,7 @@ namespace CosmosDB.SQL
             return result;
         }
 
-        public async IAsyncEnumerable<T> ReplaceDocuments<T>(string query) 
+        public async IAsyncEnumerable<T> ReplaceDocuments<T>(string query)
         {
             var container = CosmosClient.GetContainer(databaseId: "Families", containerId: "Family");
             var page = container.GetItemQueryIterator<dynamic>(query);
@@ -54,8 +54,8 @@ namespace CosmosDB.SQL
             foreach (var item in await page.ReadNextAsync())
             {
                 item.gender = "male";
-                var result= await container.ReplaceItemAsync<dynamic>(item,(string) item.id);
-                var updated= JsonSerializer.Deserialize<T>(result.Resource.ToString());
+                var result = await container.ReplaceItemAsync<dynamic>(item, (string)item.id);
+                var updated = JsonSerializer.Deserialize<T>(result.Resource.ToString());
                 yield return updated;
             }
         }
@@ -94,15 +94,20 @@ namespace CosmosDB.SQL
             Console.WriteLine($"Deleting database {databaseName}");
             await CosmosClient.GetDatabase(databaseName).DeleteAsync();
         }
-        public async Task CreateContainer(string databaseName, string containerName, string partitionKey)
+        public async Task CreateContainerIfNotExists(string databaseName, string containerName, string partitionKey)
         {
             Console.WriteLine($"Creating Container {containerName} in database: {databaseName}");
-            await CosmosClient.GetDatabase(databaseName).CreateContainerIfNotExistsAsync(
-                new ContainerProperties
-                {
-                    PartitionKeyPath = partitionKey,
-                    Id = Guid.NewGuid().ToString("N"),
-                }, throughput: 400);
+            try
+            {
+                var database = CosmosClient.GetDatabase(databaseName);
+                await database.CreateContainerIfNotExistsAsync(containerName, partitionKey,throughput: 400);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+          
         }
 
         public async Task CreateItemAsync(string databaseName, string containerName)

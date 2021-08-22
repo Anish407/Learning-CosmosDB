@@ -1,4 +1,4 @@
 {
-  "CosmosEndpoint": "https://democosmosdb44.documents.azure.com:443/",
-  "MasterKey": "xJKV5pUbA10SB6Mg1qQBd45MkbwKKpVf1AkCn1n0RgQOJLMAqUldXmP3N3oy962gER0n0orsvhfdLQoHRuVcdA=="
+  "CosmosEndpoint": "",
+  "MasterKey": ""
 }
