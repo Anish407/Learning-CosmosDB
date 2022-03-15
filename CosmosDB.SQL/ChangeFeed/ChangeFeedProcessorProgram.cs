@@ -3,7 +3,13 @@ using CosmosDB.SQL;
 using Microsoft.Azure.Cosmos;
 using System;
 
-// assign "Cosmos DB Built-in Data Contributor" role to user/managed identity to make the below line work
+
+
+//az cosmosdb sql role assignment create --account-name mychangefeeddemo --resource-group rg-del --scope "/" 
+//    --principal-id {objectid in azure ad} --role-definition-id 
+//    /subscriptions/{ subscriptionId}/resourceGroups/{ rg-name}/providers/Microsoft.DocumentDB/databaseAccounts/{ cosmosaccountname}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002
+
+// assign "Cosmos DB Built-in Data Contributor" role to user/managed identity to make the below line work, run the above cli command to assign the role 
 CosmosClient cosmosClient = new CosmosClient("https://mychangefeeddemo.documents.azure.com:443/", new DefaultAzureCredential());
 
 Database cosmosDb = cosmosClient.GetDatabase("sampledb");
